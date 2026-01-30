@@ -781,7 +781,7 @@ function Ppu(snes) {
 
   this.get13Signed = function(val) {
     if((val & 0x1000) > 0) {
-      return -(8192 - (val & 0xfff));
+      return -(8192 - (val & 0x1fff));
     }
     return (val & 0xfff);
   }

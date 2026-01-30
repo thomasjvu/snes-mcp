@@ -129,6 +129,9 @@ export class SNESEmulator {
         throw new Error('SnesJs loadRom returned false');
       }
 
+      // Reset after loading so the CPU reads the reset vector from the cart
+      this.snes.reset(true);
+
       this.romLoaded = true;
       this.romPath = romPath;
       log.info(`ROM loaded: ${path.basename(romPath)}`);
