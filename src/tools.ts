@@ -17,12 +17,16 @@ export function registerSNESTools(server: McpServer, emulatorService: EmulatorSe
       `press_${button.toLowerCase()}`,
       `Press the ${button} button on the SNES controller`,
       {
-        duration_frames: z.number().int().positive().optional().default(25).describe('Number of frames to hold the button')
+        duration_frames: z.number().int().positive().optional().default(25).describe('Number of frames to hold the button'),
+        include_screenshot: z.boolean().optional().default(true).describe('Whether to include a screenshot in the response (default true). Set to false to save context window space when you don\'t need to see the screen.')
       },
-      async ({ duration_frames }): Promise<CallToolResult> => {
+      async ({ duration_frames, include_screenshot }): Promise<CallToolResult> => {
         emulatorService.pressButton(button, duration_frames);
-        const screen = emulatorService.getScreen();
-        return { content: [screen] };
+        if (include_screenshot) {
+          const screen = emulatorService.getScreen();
+          return { content: [screen] };
+        }
+        return { content: [{ type: 'text', text: JSON.stringify({ button, frames: duration_frames }) }] };
       }
     );
   });
@@ -32,11 +36,16 @@ export function registerSNESTools(server: McpServer, emulatorService: EmulatorSe
     'wait_frames',
     'Wait for a specified number of frames',
     {
-      duration_frames: z.number().int().positive().describe('Number of frames to wait').default(100)
+      duration_frames: z.number().int().positive().describe('Number of frames to wait').default(100),
+      include_screenshot: z.boolean().optional().default(true).describe('Whether to include a screenshot in the response (default true). Set to false to save context window space when you don\'t need to see the screen.')
     },
-    async ({ duration_frames }): Promise<CallToolResult> => {
-      const screen = emulatorService.waitFrames(duration_frames);
-      return { content: [screen] };
+    async ({ duration_frames, include_screenshot }): Promise<CallToolResult> => {
+      emulatorService.waitFrames(duration_frames);
+      if (include_screenshot) {
+        const screen = emulatorService.getScreen();
+        return { content: [screen] };
+      }
+      return { content: [{ type: 'text', text: JSON.stringify({ waited_frames: duration_frames }) }] };
     }
   );
 

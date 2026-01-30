@@ -52,7 +52,7 @@ export class EmulatorService {
     }
   }
 
-  pressButton(button: SNESButton, durationFrames: number): ImageContent {
+  pressButton(button: SNESButton, durationFrames: number): void {
     log.debug(`Pressing button: ${button}`);
     if (!this.isRomLoaded()) {
       log.warn('Attempted to press button with no ROM loaded');
@@ -60,7 +60,6 @@ export class EmulatorService {
     }
     this.emulator.pressButton(button, durationFrames);
     this.wsSync?.broadcastButtonPress(button, durationFrames);
-    return this.getScreen();
   }
 
   /** Press button on server emulator only, no broadcast (for browser-originated inputs) */
@@ -69,7 +68,7 @@ export class EmulatorService {
     this.emulator.pressButton(button, durationFrames);
   }
 
-  waitFrames(durationFrames: number): ImageContent {
+  waitFrames(durationFrames: number): void {
     log.debug(`Waiting for ${durationFrames} frames`);
     if (!this.isRomLoaded()) {
       log.warn('Attempted to wait frames with no ROM loaded');
@@ -79,7 +78,6 @@ export class EmulatorService {
       this.emulator.doFrame();
     }
     log.verbose(`Waited ${durationFrames} frames`);
-    return this.getScreen();
   }
 
   getScreen(): ImageContent {
